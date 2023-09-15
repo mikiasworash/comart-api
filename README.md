@@ -17,12 +17,12 @@ cd comart-api
 npm install
 ```
 
-### 3. Create .env file at the root folder and update the environment variables
+### 3. Create .env at root and set environment variables
 ```
 NODE_ENV=development
 PORT=5000
-MONGO_URI=
-JWT_SECRET_KEY=
+MONGO_URI="Enter you mongodb uri here"
+JWT_SECRET_KEY="Enter a random secret key here"
 JWT_EXPIRE=30d
 ```
 
@@ -31,5 +31,3 @@ JWT_EXPIRE=30d
 ```
 npm run dev
 ```
-
-### 5. Open [http://localhost:5000](http://localhost:5000) with your browser to see the result
