@@ -5,7 +5,10 @@ import Product from "../models/productModel.js";
 // router POST /api/products
 // @access Private
 const addProduct = asyncHanlder(async (req, res) => {
-  const productExists = await Product.findOne({ name: req.body.name });
+  const productExists = await Product.findOne({
+    name: req.body.name,
+    vendor: req.user._id,
+  });
   if (productExists) {
     res.status(400);
     throw new Error("Product already exists");
@@ -54,4 +57,36 @@ const updateProduct = asyncHanlder(async (req, res) => {
   }
 });
 
-export { addProduct, updateProduct };
+// @desc Get products
+// router GET /api/products/
+// @access Public
+const getProducts = asyncHanlder(async (req, res) => {
+  let products = await Product.find().populate({
+    path: "category",
+    select: "name",
+  });
+
+  return res.status(200).json({
+    success: true,
+    count: products.length,
+    data: products,
+  });
+});
+
+// @desc Get products
+// router GET /api/products/:vendorId
+// @access Public
+const getProductsByVendor = asyncHanlder(async (req, res) => {
+  let products = await Product.find({ vendor: req.params.vendorId }).populate({
+    path: "category",
+    select: "name",
+  });
+
+  return res.status(200).json({
+    success: true,
+    count: products.length,
+    data: products,
+  });
+});
+
+export { addProduct, updateProduct, getProducts, getProductsByVendor };

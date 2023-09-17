@@ -45,4 +45,17 @@ const updateCategory = asyncHanlder(async (req, res) => {
   }
 });
 
-export { addCategory, updateCategory };
+// @desc Get category
+// router GET /api/categories/
+// @access Public
+const getCategories = asyncHanlder(async (req, res) => {
+  let category = await Category.find();
+
+  return res.status(200).json({
+    success: true,
+    count: category.length,
+    data: category,
+  });
+});
+
+export { addCategory, updateCategory, getCategories };
