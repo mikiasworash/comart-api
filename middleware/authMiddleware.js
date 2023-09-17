@@ -1,28 +1,41 @@
-import jwt from 'jsonwebtoken'
-import asyncHandler from 'express-async-handler'
-import User from '../models/userModel.js'
+import jwt from "jsonwebtoken";
+import asyncHandler from "express-async-handler";
+import User from "../models/userModel.js";
 
+// Protect routes from unauthorized acess
 const protect = asyncHandler(async (req, res, next) => {
-  let token
+  let token;
 
-  token = req.cookies.jwt
+  token = req.cookies.jwt;
 
   if (token) {
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-      req.user = await User.findById(decoded.userId).select('-password')
+      req.user = await User.findById(decoded.userId).select("-password");
 
-      next()
+      next();
     } catch (error) {
-      res.status(401)
-      throw new Error('Not authorized, Invalid token')
+      res.status(401);
+      throw new Error("Not authorized, Invalid token");
     }
   } else {
-    res.status(401)
-    throw new Error('Not authorized, token not found')
+    res.status(401);
+    throw new Error("Not authorized, token not found");
   }
-})
+});
 
-export { protect }
+// Grant access to specific roles
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      res.status(403);
+      throw new Error("This user is not authorized to access this route");
+    }
+
+    next();
+  };
+};
+
+export { protect, authorize };

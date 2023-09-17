@@ -1,16 +1,16 @@
-import mongoose, { mongo } from 'mongoose'
+import mongoose, { mongo } from "mongoose";
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI)
+    const conn = await mongoose.connect(process.env.MONGO_URI);
 
     console.log(
-      `MongoDB connected: ${conn.connection.host}`.cyan.underline.bold
-    )
+      `Comart MongoDB connected: ${conn.connection.host}`.cyan.underline.bold
+    );
   } catch (error) {
-    console.error(`Error: ${error.message}`)
-    process.exit(1)
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
-}
+};
 
-export default connectDB
+export default connectDB;

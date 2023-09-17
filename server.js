@@ -7,6 +7,8 @@ import colors from "colors";
 import cookieParser from "cookie-parser";
 const port = process.env.PORT || 5000;
 import userRoutes from "./routes/userRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 connectDB();
 
@@ -20,6 +22,8 @@ app.use(cookieParser());
 
 // Mount routers
 app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // add middleware functions
 app.use(notFound);
