@@ -12,7 +12,6 @@ const productSchema = mongoose.Schema(
     },
     price: { type: Number, required: [true, "Please add a price"] },
     quantity: { type: Number, required: [true, "Please add quantity"] },
-    soldOut: { type: Boolean, default: false },
     featured: { type: Boolean, default: false },
     vendor: {
       type: mongoose.Schema.Types.ObjectId,

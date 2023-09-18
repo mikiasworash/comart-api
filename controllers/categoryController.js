@@ -45,7 +45,25 @@ const updateCategory = asyncHanlder(async (req, res) => {
   }
 });
 
-// @desc Get category
+// @desc Delete a category
+// router DELETE /api/categories/:id
+// @access Private
+const deleteCategory = asyncHanlder(async (req, res) => {
+  let category = await Category.findById(req.params.id);
+  // Make sure category exists
+  if (!category) {
+    res.status(400);
+    throw new Error("Category not found");
+  } else {
+    category = await Category.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      data: category,
+    });
+  }
+});
+
+// @desc Get all categores
 // router GET /api/categories/
 // @access Public
 const getCategories = asyncHanlder(async (req, res) => {
@@ -58,4 +76,26 @@ const getCategories = asyncHanlder(async (req, res) => {
   });
 });
 
-export { addCategory, updateCategory, getCategories };
+// @desc Get category
+// router GET /api/categories/:id
+// @access Public
+const getCategory = asyncHanlder(async (req, res) => {
+  let category = await Category.findById(req.params.id);
+  if (!category) {
+    res.status(400);
+    throw new Error("Category not found with this id");
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: category,
+  });
+});
+
+export {
+  addCategory,
+  updateCategory,
+  getCategories,
+  getCategory,
+  deleteCategory,
+};
