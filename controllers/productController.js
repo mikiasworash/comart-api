@@ -57,8 +57,32 @@ const updateProduct = asyncHanlder(async (req, res) => {
   }
 });
 
+// @desc Delete a product
+// router DELETE /api/products/:id
+// @access Private
+const deleteProduct = asyncHanlder(async (req, res) => {
+  let product = await Product.findById(req.params.id);
+  // Make sure product exists
+  if (!product) {
+    res.status(400);
+    throw new Error("Product not found");
+  } else {
+    // Make sure user is the product owner
+    if (product.vendor.toString() !== req.user._id.toString()) {
+      res.status(403);
+      throw new Error("This user is not the owner of this product");
+    }
+
+    product = await Product.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  }
+});
+
 // @desc Get products
-// router GET /api/products/
+// router GET /api/products
 // @access Public
 const getProducts = asyncHanlder(async (req, res) => {
   let products = await Product.find().populate({
@@ -89,4 +113,27 @@ const getProductsByVendor = asyncHanlder(async (req, res) => {
   });
 });
 
-export { addProduct, updateProduct, getProducts, getProductsByVendor };
+// @desc Get Featured products
+// router GET /api/products/featured
+// @access Public
+const getFeaturedProducts = asyncHanlder(async (req, res) => {
+  let products = await Product.find({ featured: true }).populate({
+    path: "category",
+    select: "name",
+  });
+
+  return res.status(200).json({
+    success: true,
+    count: products.length,
+    data: products,
+  });
+});
+
+export {
+  addProduct,
+  updateProduct,
+  getProducts,
+  getProductsByVendor,
+  getFeaturedProducts,
+  deleteProduct,
+};
