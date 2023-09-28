@@ -35,9 +35,10 @@ const userSchema = mongoose.Schema(
       required: [true, "Please add a password"],
     },
     active: {
-      type: Boolean,
-      default: true
-    }
+      type: String,
+      enum: ["pending", "active", "rejected"],
+      default: "active",
+    },
   },
   {
     timestamps: true,

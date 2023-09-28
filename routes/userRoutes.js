@@ -1,6 +1,6 @@
-import express from 'express'
+import express from "express";
 
-const router = express.Router()
+const router = express.Router();
 
 import {
   authUser,
@@ -8,16 +8,22 @@ import {
   logoutUser,
   getUserProfile,
   updateUserProfile,
-} from '../controllers/userController.js'
+  getVendors,
+  updateVendorStatus,
+} from "../controllers/userController.js";
 
-import { protect } from '../middleware/authMiddleware.js'
+import { protect, authorize } from "../middleware/authMiddleware.js";
 
-router.post('/auth', authUser)
-router.post('/', registerUser)
-router.post('/logout', logoutUser)
+router.post("/auth", authUser);
+router.post("/", registerUser);
+router.post("/logout", logoutUser);
+router.route("/vendors").get(protect, authorize("admin"), getVendors);
 router
-  .route('/profile')
+  .route("/vendors/:id")
+  .put(protect, authorize("admin"), updateVendorStatus);
+router
+  .route("/profile")
   .get(protect, getUserProfile)
-  .put(protect, updateUserProfile)
+  .put(protect, updateUserProfile);
 
-export default router
+export default router;

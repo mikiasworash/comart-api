@@ -57,6 +57,29 @@ const updateProduct = asyncHanlder(async (req, res) => {
   }
 });
 
+// @desc Make a product featured
+// router PUT /api/products/featured/:id
+// @access Private
+const featureProduct = asyncHanlder(async (req, res) => {
+  let product = await Product.findById(req.params.id);
+  // Make sure product exists
+  if (!product) {
+    res.status(400);
+    throw new Error("Product not found");
+  } else {
+    req.body.featured = !product.featured;
+
+    product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  }
+});
+
 // @desc Delete a product
 // router DELETE /api/products/:id
 // @access Private
@@ -136,4 +159,5 @@ export {
   getProductsByVendor,
   getFeaturedProducts,
   deleteProduct,
+  featureProduct,
 };

@@ -18,6 +18,7 @@ const authUser = asyncHanlder(async (req, res) => {
       phoneNumber: user.phoneNumber,
       profilePic: user.profilePic,
       role: user.role,
+      active: user.active,
     });
   } else {
     res.status(401);
@@ -30,6 +31,7 @@ const authUser = asyncHanlder(async (req, res) => {
 // @access Public
 const registerUser = asyncHanlder(async (req, res) => {
   const { name, email, password, phoneNumber, role, profilePic } = req.body;
+  const active = role === "vendor" ? "pending" : "active";
 
   const userExists = await User.findOne({ email: email });
   if (userExists) {
@@ -44,6 +46,7 @@ const registerUser = asyncHanlder(async (req, res) => {
     phoneNumber,
     profilePic,
     role,
+    active,
   });
   if (user) {
     generateToken(res, user._id);
@@ -54,6 +57,7 @@ const registerUser = asyncHanlder(async (req, res) => {
       phoneNumber: user.phoneNumber,
       profilePic: user.profilePic,
       role: user.role,
+      active: user.active,
     });
   } else {
     res.status(400);
@@ -84,6 +88,7 @@ const getUserProfile = asyncHanlder(async (req, res) => {
     phoneNumber: req.user.phoneNumber,
     profilePic: req.user.profilePic,
     role: req.user.role,
+    active: req.user.active,
   };
   res.status(200).json(user);
 });
@@ -121,10 +126,46 @@ const updateUserProfile = asyncHanlder(async (req, res) => {
   }
 });
 
+// @desc Get all vendors
+// router GET /api/users/vendors
+// @access Public
+const getVendors = asyncHanlder(async (req, res) => {
+  let vendors = await User.find({ role: "vendor" }).select("-password");
+
+  return res.status(200).json({
+    success: true,
+    count: vendors.length,
+    data: vendors,
+  });
+});
+
+// @desc Update Vendor status
+// router PUT /api/users/vendors/:id
+// @access Private
+const updateVendorStatus = asyncHanlder(async (req, res) => {
+  let vendor = await User.findById(req.params.id);
+  // Make sure vendor exists
+  if (!vendor) {
+    res.status(400);
+    throw new Error("Vendor not found");
+  } else {
+    vendor = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      success: true,
+      data: vendor,
+    });
+  }
+});
+
 export {
   authUser,
   registerUser,
   logoutUser,
   getUserProfile,
   updateUserProfile,
+  getVendors,
+  updateVendorStatus,
 };
