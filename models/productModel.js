@@ -10,6 +10,10 @@ const productSchema = mongoose.Schema(
       required: [true, "Please add a category"],
       ref: "Category",
     },
+    photo: {
+      type: String,
+      default: "default",
+    },
     price: { type: Number, required: [true, "Please add a price"] },
     quantity: { type: Number, required: [true, "Please add quantity"] },
     featured: { type: Boolean, default: false },

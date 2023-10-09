@@ -21,9 +21,9 @@ const userSchema = mongoose.Schema(
       required: [true, "Please add a phone number"],
       unique: true,
     },
-    profilePic: {
+    photo: {
       type: String,
-      default: "defaultProfilePic",
+      default: "default",
     },
     role: {
       type: String,

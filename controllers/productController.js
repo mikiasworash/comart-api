@@ -108,15 +108,40 @@ const deleteProduct = asyncHanlder(async (req, res) => {
 // router GET /api/products
 // @access Public
 const getProducts = asyncHanlder(async (req, res) => {
-  let products = await Product.find().populate({
-    path: "category",
-    select: "name",
-  });
+  let products = await Product.find()
+    .populate({
+      path: "category",
+      select: "name",
+    })
+    .populate({
+      path: "vendor",
+      select: "name",
+    });
 
   return res.status(200).json({
     success: true,
     count: products.length,
     data: products,
+  });
+});
+
+// @desc Get product
+// router GET /api/products/:id
+// @access Public
+const getProduct = asyncHanlder(async (req, res) => {
+  let product = await Product.findById(req.params.id)
+    .populate({
+      path: "category",
+      select: "name",
+    })
+    .populate({
+      path: "vendor",
+      select: "name",
+    });
+
+  return res.status(200).json({
+    success: true,
+    data: product,
   });
 });
 
@@ -140,10 +165,15 @@ const getProductsByVendor = asyncHanlder(async (req, res) => {
 // router GET /api/products/featured
 // @access Public
 const getFeaturedProducts = asyncHanlder(async (req, res) => {
-  let products = await Product.find({ featured: true }).populate({
-    path: "category",
-    select: "name",
-  });
+  let products = await Product.find({ featured: true })
+    .populate({
+      path: "category",
+      select: "name",
+    })
+    .populate({
+      path: "vendor",
+      select: "name",
+    });
 
   return res.status(200).json({
     success: true,
@@ -160,4 +190,5 @@ export {
   getFeaturedProducts,
   deleteProduct,
   featureProduct,
+  getProduct,
 };
