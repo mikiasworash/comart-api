@@ -9,14 +9,25 @@ const authUser = asyncHanlder(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email: email });
+
   if (user && (await user.matchPassword(password))) {
+    if (user.active === "pending") {
+      res.status(401);
+      throw new Error("Sorry, this account is currently waiting for approval!");
+    } else if (user.active === "rejected") {
+      res.status(401);
+      throw new Error(
+        "Sorry, this account is blocked! Consider contacting the administrator."
+      );
+    }
+
     generateToken(res, user._id);
     res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      phoneNumber: user.phoneNumber,
-      profilePic: user.profilePic,
+      phone: user.phone,
+      photo: user.photo,
       role: user.role,
       active: user.active,
     });
@@ -30,7 +41,7 @@ const authUser = asyncHanlder(async (req, res) => {
 // router POST /api/users
 // @access Public
 const registerUser = asyncHanlder(async (req, res) => {
-  const { name, email, password, phoneNumber, role, profilePic } = req.body;
+  const { name, email, password, phone, role, photo } = req.body;
   const active = role === "vendor" ? "pending" : "active";
 
   const userExists = await User.findOne({ email: email });
@@ -43,19 +54,22 @@ const registerUser = asyncHanlder(async (req, res) => {
     name,
     email,
     password,
-    phoneNumber,
-    profilePic,
+    phone,
+    photo,
     role,
     active,
   });
+
   if (user) {
-    generateToken(res, user._id);
+    if (user.role !== "vendor") {
+      generateToken(res, user._id);
+    }
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      phoneNumber: user.phoneNumber,
-      profilePic: user.profilePic,
+      phone: user.phone,
+      photo: user.photo,
       role: user.role,
       active: user.active,
     });
@@ -85,8 +99,8 @@ const getUserProfile = asyncHanlder(async (req, res) => {
     _id: req.user._id,
     name: req.user.name,
     email: req.user.email,
-    phoneNumber: req.user.phoneNumber,
-    profilePic: req.user.profilePic,
+    phone: req.user.phone,
+    photo: req.user.photo,
     role: req.user.role,
     active: req.user.active,
   };
@@ -102,8 +116,8 @@ const updateUserProfile = asyncHanlder(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
-    user.profilePic = req.body.profilePic || user.profilePic;
+    user.phone = req.body.phone || user.phone;
+    user.photo = req.body.photo || user.photo;
     user.role = req.body.role || user.role;
 
     if (req.body.password) {
@@ -116,8 +130,8 @@ const updateUserProfile = asyncHanlder(async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      phoneNumber: updatedUser.phoneNumber,
-      profilePic: updatedUser.profilePic,
+      phone: updatedUser.phone,
+      photo: updatedUser.photo,
       role: updatedUser.role,
     });
   } else {
