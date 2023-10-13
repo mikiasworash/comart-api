@@ -20,10 +20,7 @@ const addProduct = asyncHanlder(async (req, res) => {
   const product = await Product.create(req.body);
 
   if (product) {
-    res.status(201).json({
-      success: true,
-      data: product,
-    });
+    res.status(201).json({ product });
   } else {
     res.status(400);
     throw new Error("Adding a product failed");
@@ -50,14 +47,11 @@ const updateProduct = asyncHanlder(async (req, res) => {
       new: true,
       runValidators: true,
     });
-    res.status(200).json({
-      success: true,
-      data: product,
-    });
+    res.status(200).json({ product });
   }
 });
 
-// @desc Make a product featured
+// @desc Update a product's feature status
 // router PUT /api/products/featured/:id
 // @access Private
 const featureProduct = asyncHanlder(async (req, res) => {
@@ -73,10 +67,7 @@ const featureProduct = asyncHanlder(async (req, res) => {
       new: true,
       runValidators: true,
     });
-    res.status(200).json({
-      success: true,
-      data: product,
-    });
+    res.status(200).json({ product });
   }
 });
 
@@ -97,14 +88,11 @@ const deleteProduct = asyncHanlder(async (req, res) => {
     }
 
     product = await Product.findByIdAndDelete(req.params.id);
-    res.status(200).json({
-      success: true,
-      data: product,
-    });
+    res.status(200).json({ product });
   }
 });
 
-// @desc Get products
+// @desc Get all products
 // router GET /api/products
 // @access Public
 const getProducts = asyncHanlder(async (req, res) => {
@@ -118,15 +106,11 @@ const getProducts = asyncHanlder(async (req, res) => {
       select: "name",
     });
 
-  return res.status(200).json({
-    success: true,
-    count: products.length,
-    data: products,
-  });
+  return res.status(200).json({ products });
 });
 
-// @desc Get product
-// router GET /api/products/:id
+// @desc Get a single product
+// router GET /api/products/product/:id
 // @access Public
 const getProduct = asyncHanlder(async (req, res) => {
   let product = await Product.findById(req.params.id)
@@ -139,14 +123,11 @@ const getProduct = asyncHanlder(async (req, res) => {
       select: "name",
     });
 
-  return res.status(200).json({
-    success: true,
-    data: product,
-  });
+  return res.status(200).json({ product });
 });
 
-// @desc Get products
-// router GET /api/products/:vendorId
+// @desc Get products owned by a vendor
+// router GET /api/products/vendor/:vendorId
 // @access Public
 const getProductsByVendor = asyncHanlder(async (req, res) => {
   let products = await Product.find({ vendor: req.params.vendorId }).populate({
@@ -154,11 +135,7 @@ const getProductsByVendor = asyncHanlder(async (req, res) => {
     select: "name",
   });
 
-  return res.status(200).json({
-    success: true,
-    count: products.length,
-    data: products,
-  });
+  return res.status(200).json({ products });
 });
 
 // @desc Get Featured products
@@ -175,11 +152,7 @@ const getFeaturedProducts = asyncHanlder(async (req, res) => {
       select: "name",
     });
 
-  return res.status(200).json({
-    success: true,
-    count: products.length,
-    data: products,
-  });
+  return res.status(200).json({ products });
 });
 
 export {

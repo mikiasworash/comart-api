@@ -14,10 +14,7 @@ const addCategory = asyncHanlder(async (req, res) => {
   const category = await Category.create(req.body);
 
   if (category) {
-    res.status(201).json({
-      success: true,
-      data: category,
-    });
+    res.status(201).json({ category });
   } else {
     res.status(400);
     throw new Error("Adding a category failed");
@@ -38,10 +35,7 @@ const updateCategory = asyncHanlder(async (req, res) => {
       new: true,
       runValidators: true,
     });
-    res.status(200).json({
-      success: true,
-      data: category,
-    });
+    res.status(200).json({ category });
   }
 });
 
@@ -56,10 +50,7 @@ const deleteCategory = asyncHanlder(async (req, res) => {
     throw new Error("Category not found");
   } else {
     category = await Category.findByIdAndDelete(req.params.id);
-    res.status(200).json({
-      success: true,
-      data: category,
-    });
+    res.status(200).json({ category });
   }
 });
 
@@ -67,13 +58,9 @@ const deleteCategory = asyncHanlder(async (req, res) => {
 // router GET /api/categories/
 // @access Public
 const getCategories = asyncHanlder(async (req, res) => {
-  let category = await Category.find();
+  let categories = await Category.find();
 
-  return res.status(200).json({
-    success: true,
-    count: category.length,
-    data: category,
-  });
+  return res.status(200).json({ categories });
 });
 
 // @desc Get category
@@ -86,10 +73,7 @@ const getCategory = asyncHanlder(async (req, res) => {
     throw new Error("Category not found with this id");
   }
 
-  return res.status(200).json({
-    success: true,
-    data: category,
-  });
+  return res.status(200).json({ category });
 });
 
 export {

@@ -146,11 +146,7 @@ const updateUserProfile = asyncHanlder(async (req, res) => {
 const getVendors = asyncHanlder(async (req, res) => {
   let vendors = await User.find({ role: "vendor" }).select("-password");
 
-  return res.status(200).json({
-    success: true,
-    count: vendors.length,
-    data: vendors,
-  });
+  return res.status(200).json({ vendors });
 });
 
 // @desc Update Vendor status
@@ -167,10 +163,7 @@ const updateVendorStatus = asyncHanlder(async (req, res) => {
       new: true,
       runValidators: true,
     });
-    res.status(200).json({
-      success: true,
-      data: vendor,
-    });
+    res.status(200).json({ vendor });
   }
 });
 
