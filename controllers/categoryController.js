@@ -1,5 +1,6 @@
 import asyncHanlder from "express-async-handler";
 import Category from "../models/categoryModel.js";
+import Product from "../models/productModel.js";
 
 // @desc Add a new category
 // router POST /api/categories
@@ -49,6 +50,12 @@ const deleteCategory = asyncHanlder(async (req, res) => {
     res.status(400);
     throw new Error("Category not found");
   } else {
+    // check if product exists with this category
+    const productExists = await Product.findOne({ category: req.params.id });
+    if (productExists) {
+      res.status(400);
+      throw new Error("Couldn't delete category as it contains products");
+    }
     category = await Category.findByIdAndDelete(req.params.id);
     res.status(200).json({ category });
   }
