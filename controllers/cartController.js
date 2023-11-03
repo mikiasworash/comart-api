@@ -22,9 +22,12 @@ const addCart = asyncHanlder(async (req, res) => {
 const getCart = asyncHanlder(async (req, res) => {
   let cart = await Cart.find({ user: req.params.id }).populate({
     path: "product",
-    select: "name quantity price photo",
     populate: {
       path: "category",
+      select: "name",
+    },
+    populate: {
+      path: "vendor",
       select: "name",
     },
   });
