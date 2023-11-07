@@ -6,32 +6,25 @@ import User from "../models/userModel.js";
 // router POST /api/cart/:id
 // @access Private
 const addCart = asyncHanlder(async (req, res) => {
-  req.body.amount = 1;
-  const cart = await Cart.create(req.body);
+  const cartExists = await Cart.findOne({
+    user: req.user._id,
+    product: req.params.id,
+  });
+  if (cartExists) {
+    res.status(400);
+    throw new Error("Product is already in cart");
+  }
+
+  req.body.user = req.user._id;
+  req.body.product = req.params.id;
+
+  let cart = await Cart.create(req.body);
 
   if (cart) {
     res.status(201).json(cart);
   } else {
     res.status(400);
     throw new Error("adding cart failed");
-  }
-});
-
-// @desc Update cart
-// router PUT /api/cart/:id
-// @access Private
-const updateCart = asyncHanlder(async (req, res) => {
-  let cart = await Cart.findById({ user: req.params.id });
-  // Make sure cart exists
-  if (!cart) {
-    res.status(400);
-    throw new Error("Cart not found");
-  } else {
-    cart = await Cart.findByIdAndUpdate(cart._id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json({ cart });
   }
 });
 
@@ -58,4 +51,4 @@ const getCart = asyncHanlder(async (req, res) => {
   return res.status(200).json(cart);
 });
 
-export { getCart, addCart, updateCart };
+export { getCart, addCart };
