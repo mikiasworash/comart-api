@@ -48,6 +48,12 @@ const getCart = asyncHanlder(async (req, res) => {
     throw new Error("Cart not found for this user");
   }
 
+  // Make sure user is the cart owner
+  if (cart[0].user.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error("This user is not the owner of this cart");
+  }
+
   return res.status(200).json(cart);
 });
 
