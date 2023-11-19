@@ -62,7 +62,7 @@ const deleteCategory = asyncHanlder(async (req, res) => {
 });
 
 // @desc Get all categores
-// router GET /api/categories/
+// router GET /api/categories
 // @access Public
 const getCategories = asyncHanlder(async (req, res) => {
   let categories = await Category.find();

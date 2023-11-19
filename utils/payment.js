@@ -11,6 +11,7 @@ const payment = asyncHanlder(async (req, res) => {
     prefix: "TX",
     size: 20,
   });
+
   try {
     const apiResponse = await axios.post(
       "https://api.chapa.co/v1/transaction/initialize",
@@ -29,4 +30,23 @@ const payment = asyncHanlder(async (req, res) => {
   }
 });
 
-export { payment };
+const verifyPayment = asyncHanlder(async (req, res) => {
+  const tx_ref = req.params.tx;
+  try {
+    const apiResponse = await axios.get(
+      `https://api.chapa.co/v1/transaction/verify/${tx_ref}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.chapaSecretKey}`,
+        },
+      }
+    );
+
+    return res.status(200).json(apiResponse.data);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Payment failed");
+  }
+});
+
+export { payment, verifyPayment };

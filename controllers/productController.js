@@ -51,7 +51,7 @@ const updateProduct = asyncHanlder(async (req, res) => {
   }
 });
 
-// @desc Update a product's feature status
+// @desc Update the feature status of a product
 // router PUT /api/products/featured/:id
 // @access Private
 const featureProduct = asyncHanlder(async (req, res) => {
