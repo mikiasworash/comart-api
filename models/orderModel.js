@@ -30,6 +30,10 @@ const orderSchema = mongoose.Schema(
       enum: ["pending", "paid"],
       default: "pending",
     },
+    transactionRef: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

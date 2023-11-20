@@ -23,6 +23,7 @@ const payment = asyncHanlder(async (req, res) => {
       }
     );
 
+    apiResponse.data.tx_ref = req.body.tx_ref;
     return res.status(201).json(apiResponse.data);
   } catch (error) {
     res.status(500);
