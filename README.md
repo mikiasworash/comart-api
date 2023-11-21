@@ -25,6 +25,7 @@ MONGO_URI="Enter you mongodb uri here"
 JWT_SECRET_KEY="Enter a random secret key here"
 JWT_EXPIRE=30d
 chapaSecretKey="Enter your chapa secret key here"
+chapaSecretHash="Enter your chapa secret hash here"
 ```
 
 ### 4. Start the API

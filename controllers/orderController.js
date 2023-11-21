@@ -1,6 +1,7 @@
 import asyncHanlder from "express-async-handler";
 import Order from "../models/orderModel.js";
 import Cart from "../models/cartModel.js";
+import crypto from "crypto";
 
 // @desc Get Orders
 // router GET /api/orders
@@ -9,14 +10,14 @@ const getOrders = asyncHanlder(async (req, res) => {
   const orders = await Order.find()
     .populate({
       path: "buyer",
-      select: "name",
+      select: "name photo",
     })
     .populate({
       path: "products.product",
-      select: "name vendor",
+      select: "name photo vendor",
       populate: {
         path: "vendor",
-        select: "name",
+        select: "name photo",
       },
     });
 
@@ -29,19 +30,17 @@ const getOrders = asyncHanlder(async (req, res) => {
 const getOrdersByVendor = asyncHanlder(async (req, res) => {
   const vendorId = req.params.vendorId;
 
-  console.log(vendorId);
-
   let orders = await Order.find()
     .populate({
       path: "buyer",
-      select: "name",
+      select: "name photo",
     })
     .populate({
       path: "products.product",
-      select: "name vendor",
+      select: "name photo vendor",
       populate: {
         path: "vendor",
-        select: "name",
+        select: "name photo",
       },
     });
 
@@ -59,7 +58,8 @@ const getOrdersByVendor = asyncHanlder(async (req, res) => {
 // @access Private
 const addOrder = asyncHanlder(async (req, res) => {
   const userId = req.user._id;
-  const carts = await Cart.find({ user: userId }).populate("product");
+  // const carts = await Cart.find({ user: userId }).populate("product");
+  const carts = req.body.cartItems;
   const transactionRef = req.body.tx_ref;
 
   if (!carts || carts.length === 0) {
@@ -108,15 +108,26 @@ const addOrder = asyncHanlder(async (req, res) => {
 // router PUT /api/order/update
 // @access Private
 const updateOrder = asyncHanlder(async (req, res) => {
-  console.log("trying to update order");
-  const transactionRef = req.body.tx_ref;
+  const hash = crypto
+    .createHmac("sha256", process.env.chapaSecretHash)
+    .update(JSON.stringify(req.body))
+    .digest("hex");
 
-  const updatedOrder = await updateOrderStatus(transactionRef);
+  if (
+    hash == req.headers["chapa-signature"] ||
+    hash == req.headers["x-chapa-signature"]
+  ) {
+    const transactionRef = req.body.tx_ref;
 
-  if (updatedOrder) {
-    res.status(200).json(updatedOrder);
+    const updatedOrder = await updateOrderStatus(transactionRef);
+
+    if (updatedOrder) {
+      res.status(200).json(updatedOrder);
+    } else {
+      res.status(400).json({ message: "Update order failed" });
+    }
   } else {
-    res.status(400).json({ message: "Update order failed" });
+    res.status(401).json({ message: "Not authorized" });
   }
 });
 
