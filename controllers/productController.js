@@ -1,11 +1,11 @@
-import asyncHanlder from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 
 // @desc Add a new product
 // router POST /api/products
 // @access Private
-const addProduct = asyncHanlder(async (req, res) => {
+const addProduct = asyncHandler(async (req, res) => {
   const productExists = await Product.findOne({
     name: req.body.name,
     vendor: req.user._id,
@@ -31,7 +31,7 @@ const addProduct = asyncHanlder(async (req, res) => {
 // @desc Update a product
 // router PUT /api/products/:id
 // @access Private
-const updateProduct = asyncHanlder(async (req, res) => {
+const updateProduct = asyncHandler(async (req, res) => {
   let product = await Product.findById(req.params.id);
   // Make sure product exists
   if (!product) {
@@ -55,7 +55,7 @@ const updateProduct = asyncHanlder(async (req, res) => {
 // @desc Update the feature status of a product
 // router PUT /api/products/featured/:id
 // @access Private
-const featureProduct = asyncHanlder(async (req, res) => {
+const featureProduct = asyncHandler(async (req, res) => {
   let product = await Product.findById(req.params.id);
   // Make sure product exists
   if (!product) {
@@ -75,7 +75,7 @@ const featureProduct = asyncHanlder(async (req, res) => {
 // @desc Delete a product
 // router DELETE /api/products/:id
 // @access Private
-const deleteProduct = asyncHanlder(async (req, res) => {
+const deleteProduct = asyncHandler(async (req, res) => {
   let product = await Product.findById(req.params.id);
   // Make sure product exists
   if (!product) {
@@ -96,7 +96,7 @@ const deleteProduct = asyncHanlder(async (req, res) => {
 // @desc Get all products
 // router GET /api/products
 // @access Public
-const getProducts = asyncHanlder(async (req, res) => {
+const getProducts = asyncHandler(async (req, res) => {
   let products = await Product.find()
     .populate({
       path: "category",
@@ -113,7 +113,7 @@ const getProducts = asyncHanlder(async (req, res) => {
 // @desc Get a single product
 // router GET /api/products/product/:id
 // @access Public
-const getProduct = asyncHanlder(async (req, res) => {
+const getProduct = asyncHandler(async (req, res) => {
   let product = await Product.findById(req.params.id)
     .populate({
       path: "category",
@@ -130,7 +130,7 @@ const getProduct = asyncHanlder(async (req, res) => {
 // @desc Get products owned by a vendor
 // router GET /api/products/vendor/:vendorId
 // @access Public
-const getProductsByVendor = asyncHanlder(async (req, res) => {
+const getProductsByVendor = asyncHandler(async (req, res) => {
   let products = await Product.find({ vendor: req.params.vendorId }).populate({
     path: "category",
     select: "name",
@@ -142,7 +142,7 @@ const getProductsByVendor = asyncHanlder(async (req, res) => {
 // @desc Get Featured products
 // router GET /api/products/featured
 // @access Public
-const getFeaturedProducts = asyncHanlder(async (req, res) => {
+const getFeaturedProducts = asyncHandler(async (req, res) => {
   let products = await Product.find({ featured: true })
     .populate({
       path: "category",
@@ -159,17 +159,48 @@ const getFeaturedProducts = asyncHanlder(async (req, res) => {
 // @desc Get products by category
 // router GET /api/products/categories/:category
 // @access Public
-const getProductsByCategory = asyncHanlder(async (req, res) => {
+const getProductsByCategory = asyncHandler(async (req, res) => {
   const categoryName = req.params.category.toLowerCase();
 
   const category = await Category.findOne({
     name: { $regex: new RegExp(categoryName, "i") },
   });
 
-  const products = await Product.find({ category: category._id }).populate({
-    path: "category",
-    select: "name",
-  });
+  const products = await Product.find({ category: category._id })
+    .populate({
+      path: "category",
+      select: "name",
+    })
+    .populate({
+      path: "vendor",
+      select: "name",
+    });
+
+  return res.status(200).json({ products });
+});
+
+// @desc Get products by name (query string)
+// router GET /api/products/search/:query
+// @access Public
+const getProductsByName = asyncHandler(async (req, res) => {
+  const query = req.params.query.toLowerCase();
+
+  const products = await Product.find({
+    name: { $regex: new RegExp(query, "i") },
+  })
+    .populate({
+      path: "category",
+      select: "name",
+    })
+    .populate({
+      path: "vendor",
+      select: "name",
+    });
+
+  if (!products || products.length === 0) {
+    res.status(400);
+    throw new Error("Product not found");
+  }
 
   return res.status(200).json({ products });
 });
@@ -184,4 +215,5 @@ export {
   deleteProduct,
   featureProduct,
   getProduct,
+  getProductsByName,
 };

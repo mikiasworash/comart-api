@@ -12,6 +12,7 @@ import {
   getProductsByCategory,
   deleteProduct,
   featureProduct,
+  getProductsByName,
 } from "../controllers/productController.js";
 
 import { protect, authorize } from "../middleware/authMiddleware.js";
@@ -24,6 +25,7 @@ router.route("/").get(getProducts);
 router.route("/product/:id").get(getProduct);
 router.route("/featured").get(getFeaturedProducts);
 router.route("/categories/:category").get(getProductsByCategory);
+router.route("/search/:query").get(getProductsByName);
 router
   .route("/vendor/:vendorId")
   .get(protect, authorize("vendor"), getProductsByVendor);

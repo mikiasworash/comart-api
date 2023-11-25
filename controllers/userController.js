@@ -1,11 +1,11 @@
-import asyncHanlder from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 
 // @desc Auth User / Set token
 // router POST /api/users/auth
 // @access Public
-const authUser = asyncHanlder(async (req, res) => {
+const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email: email });
@@ -40,7 +40,7 @@ const authUser = asyncHanlder(async (req, res) => {
 // @desc Register a new user
 // router POST /api/users
 // @access Public
-const registerUser = asyncHanlder(async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, phone, role, photo } = req.body;
   const active = role === "vendor" ? "pending" : "active";
 
@@ -82,7 +82,7 @@ const registerUser = asyncHanlder(async (req, res) => {
 // @desc Logout User
 // router POST /api/users/logout
 // @access Public
-const logoutUser = asyncHanlder(async (req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
     expires: new Date(0),
@@ -94,7 +94,7 @@ const logoutUser = asyncHanlder(async (req, res) => {
 // @desc Get User Profile
 // router GET /api/users/profile
 // @access Private
-const getUserProfile = asyncHanlder(async (req, res) => {
+const getUserProfile = asyncHandler(async (req, res) => {
   const user = {
     _id: req.user._id,
     name: req.user.name,
@@ -110,7 +110,7 @@ const getUserProfile = asyncHanlder(async (req, res) => {
 // @desc Update User Profile
 // router PUT /api/users/profile
 // @access Private
-const updateUserProfile = asyncHanlder(async (req, res) => {
+const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
@@ -143,7 +143,7 @@ const updateUserProfile = asyncHanlder(async (req, res) => {
 // @desc Get all vendors
 // router GET /api/users/vendors
 // @access Public
-const getVendors = asyncHanlder(async (req, res) => {
+const getVendors = asyncHandler(async (req, res) => {
   let vendors = await User.find({ role: "vendor" }).select("-password");
 
   return res.status(200).json({ vendors });
@@ -152,7 +152,7 @@ const getVendors = asyncHanlder(async (req, res) => {
 // @desc Update Vendor status
 // router PUT /api/users/vendors/:id
 // @access Private
-const updateVendorStatus = asyncHanlder(async (req, res) => {
+const updateVendorStatus = asyncHandler(async (req, res) => {
   let vendor = await User.findById(req.params.id);
   // Make sure vendor exists
   if (!vendor) {

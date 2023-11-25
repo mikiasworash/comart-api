@@ -1,11 +1,11 @@
-import asyncHanlder from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import Category from "../models/categoryModel.js";
 import Product from "../models/productModel.js";
 
 // @desc Add a new category
 // router POST /api/categories
 // @access Private
-const addCategory = asyncHanlder(async (req, res) => {
+const addCategory = asyncHandler(async (req, res) => {
   const categoryExists = await Category.findOne({ name: req.body.name });
   if (categoryExists) {
     res.status(400);
@@ -25,7 +25,7 @@ const addCategory = asyncHanlder(async (req, res) => {
 // @desc Update a category
 // router PUT /api/categories/:id
 // @access Private
-const updateCategory = asyncHanlder(async (req, res) => {
+const updateCategory = asyncHandler(async (req, res) => {
   let category = await Category.findById(req.params.id);
   // Make sure category exists
   if (!category) {
@@ -43,7 +43,7 @@ const updateCategory = asyncHanlder(async (req, res) => {
 // @desc Delete a category
 // router DELETE /api/categories/:id
 // @access Private
-const deleteCategory = asyncHanlder(async (req, res) => {
+const deleteCategory = asyncHandler(async (req, res) => {
   let category = await Category.findById(req.params.id);
   // Make sure category exists
   if (!category) {
@@ -64,7 +64,7 @@ const deleteCategory = asyncHanlder(async (req, res) => {
 // @desc Get all categores
 // router GET /api/categories
 // @access Public
-const getCategories = asyncHanlder(async (req, res) => {
+const getCategories = asyncHandler(async (req, res) => {
   let categories = await Category.find();
 
   return res.status(200).json({ categories });
@@ -73,7 +73,7 @@ const getCategories = asyncHanlder(async (req, res) => {
 // @desc Get category
 // router GET /api/categories/:id
 // @access Public
-const getCategory = asyncHanlder(async (req, res) => {
+const getCategory = asyncHandler(async (req, res) => {
   let category = await Category.findById(req.params.id);
   if (!category) {
     res.status(400);

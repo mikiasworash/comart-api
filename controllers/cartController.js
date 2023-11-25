@@ -1,11 +1,11 @@
-import asyncHanlder from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import Cart from "../models/cartModel.js";
 import User from "../models/userModel.js";
 
 // @desc Add cart
 // router POST /api/cart/:id
 // @access Private
-const addCart = asyncHanlder(async (req, res) => {
+const addCart = asyncHandler(async (req, res) => {
   const cartExists = await Cart.findOne({
     user: req.user._id,
     product: req.params.id,
@@ -31,7 +31,7 @@ const addCart = asyncHanlder(async (req, res) => {
 // @desc Get cart
 // router GET /api/cart/:id
 // @access Private
-const getCart = asyncHanlder(async (req, res) => {
+const getCart = asyncHandler(async (req, res) => {
   let cart = await Cart.find({ user: req.params.id }).populate({
     path: "product",
     populate: {

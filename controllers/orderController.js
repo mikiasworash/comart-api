@@ -1,4 +1,4 @@
-import asyncHanlder from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import Order from "../models/orderModel.js";
 import Cart from "../models/cartModel.js";
 import Product from "../models/productModel.js";
@@ -7,7 +7,7 @@ import crypto from "crypto";
 // @desc Get Orders
 // router GET /api/orders
 // @access Private
-const getOrders = asyncHanlder(async (req, res) => {
+const getOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate({
       path: "buyer",
@@ -28,7 +28,7 @@ const getOrders = asyncHanlder(async (req, res) => {
 // @desc Get Orders by Vendor
 // router GET /api/orders/:vendorId
 // @access Private
-const getOrdersByVendor = asyncHanlder(async (req, res) => {
+const getOrdersByVendor = asyncHandler(async (req, res) => {
   const vendorId = req.params.vendorId;
 
   let orders = await Order.find()
@@ -57,7 +57,7 @@ const getOrdersByVendor = asyncHanlder(async (req, res) => {
 // @desc Add Order
 // router POST /api/order
 // @access Private
-const addOrder = asyncHanlder(async (req, res) => {
+const addOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   // const carts = await Cart.find({ user: userId }).populate("product");
   const carts = req.body.cartItems;
@@ -108,7 +108,7 @@ const addOrder = asyncHanlder(async (req, res) => {
 // @desc Update Order
 // router PUT /api/order/update
 // @access Private
-const updateOrder = asyncHanlder(async (req, res) => {
+const updateOrder = asyncHandler(async (req, res) => {
   const hash = crypto
     .createHmac("sha256", process.env.chapaSecretHash)
     .update(JSON.stringify(req.body))
@@ -132,7 +132,7 @@ const updateOrder = asyncHanlder(async (req, res) => {
   }
 });
 
-const updateOrderStatus = asyncHanlder(async (transactionRef) => {
+const updateOrderStatus = asyncHandler(async (transactionRef) => {
   const updatedOrder = await Order.findOneAndUpdate(
     { transactionRef: transactionRef },
     { $set: { paymentStatus: "paid" } },
