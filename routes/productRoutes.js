@@ -9,6 +9,7 @@ import {
   getProduct,
   getProductsByVendor,
   getFeaturedProducts,
+  getProductsByCategory,
   deleteProduct,
   featureProduct,
 } from "../controllers/productController.js";
@@ -22,6 +23,7 @@ router.route("/:id").delete(protect, authorize("vendor"), deleteProduct);
 router.route("/").get(getProducts);
 router.route("/product/:id").get(getProduct);
 router.route("/featured").get(getFeaturedProducts);
+router.route("/categories/:category").get(getProductsByCategory);
 router
   .route("/vendor/:vendorId")
   .get(protect, authorize("vendor"), getProductsByVendor);

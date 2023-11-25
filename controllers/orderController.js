@@ -1,6 +1,7 @@
 import asyncHanlder from "express-async-handler";
 import Order from "../models/orderModel.js";
 import Cart from "../models/cartModel.js";
+import Product from "../models/productModel.js";
 import crypto from "crypto";
 
 // @desc Get Orders
@@ -140,6 +141,17 @@ const updateOrderStatus = asyncHanlder(async (transactionRef) => {
 
   if (!updatedOrder) {
     throw new Error("Order not found");
+  }
+
+  for (const product of updatedOrder.products) {
+    const productInDatabase = await Product.findById(product.product);
+
+    if (productInDatabase) {
+      productInDatabase.quantity -= product.quantity;
+      await productInDatabase.save();
+    } else {
+      throw new Error(`Product with ID ${product._id} not found`);
+    }
   }
 
   return updatedOrder;

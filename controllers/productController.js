@@ -1,5 +1,6 @@
 import asyncHanlder from "express-async-handler";
 import Product from "../models/productModel.js";
+import Category from "../models/categoryModel.js";
 
 // @desc Add a new product
 // router POST /api/products
@@ -155,12 +156,31 @@ const getFeaturedProducts = asyncHanlder(async (req, res) => {
   return res.status(200).json({ products });
 });
 
+// @desc Get products by category
+// router GET /api/products/categories/:category
+// @access Public
+const getProductsByCategory = asyncHanlder(async (req, res) => {
+  const categoryName = req.params.category.toLowerCase();
+
+  const category = await Category.findOne({
+    name: { $regex: new RegExp(categoryName, "i") },
+  });
+
+  const products = await Product.find({ category: category._id }).populate({
+    path: "category",
+    select: "name",
+  });
+
+  return res.status(200).json({ products });
+});
+
 export {
   addProduct,
   updateProduct,
   getProducts,
   getProductsByVendor,
   getFeaturedProducts,
+  getProductsByCategory,
   deleteProduct,
   featureProduct,
   getProduct,
