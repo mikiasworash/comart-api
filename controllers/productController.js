@@ -185,17 +185,50 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 const getProductsByName = asyncHandler(async (req, res) => {
   const query = req.params.query.toLowerCase();
 
-  const products = await Product.find({
-    name: { $regex: new RegExp(query, "i") },
-  })
-    .populate({
-      path: "category",
-      select: "name",
-    })
-    .populate({
-      path: "vendor",
-      select: "name",
-    });
+  // const products = await Product.find({
+  //   name: { $regex: new RegExp(query, "i") },
+  // })
+  //   .populate({
+  //     path: "category",
+  //     select: "name",
+  //   })
+  //   .populate({
+  //     path: "vendor",
+  //     select: "name",
+  //   });
+
+  const products = await Product.aggregate([
+    {
+      $search: {
+        index: "default",
+        text: {
+          query: query,
+          path: {
+            wildcard: "*",
+          },
+          fuzzy: {},
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        foreignField: "_id",
+        localField: "category",
+        as: "category",
+      },
+    },
+    { $unwind: "$category" },
+    {
+      $lookup: {
+        from: "users",
+        foreignField: "_id",
+        localField: "vendor",
+        as: "vendor",
+      },
+    },
+    { $unwind: "$vendor" },
+  ]);
 
   if (!products || products.length === 0) {
     res.status(400);
