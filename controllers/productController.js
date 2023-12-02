@@ -238,6 +238,37 @@ const getProductsByName = asyncHandler(async (req, res) => {
   return res.status(200).json({ products });
 });
 
+// @desc search autocomplete
+// router GET /api/products/search/autocomplete/:query
+// @access Public
+const searchAutoComplete = asyncHandler(async (req, res) => {
+  const query = req.params.query.toLowerCase();
+
+  const products = await Product.aggregate([
+    {
+      $search: {
+        index: "autoCompleteProducts",
+        autocomplete: {
+          query: query,
+          path: "name",
+          tokenOrder: "sequential",
+          fuzzy: {},
+        },
+      },
+    },
+    {
+      $limit: 10,
+    },
+    {
+      $project: {
+        name: 1,
+      },
+    },
+  ]);
+
+  return res.status(200).json({ products });
+});
+
 export {
   addProduct,
   updateProduct,
@@ -249,4 +280,5 @@ export {
   featureProduct,
   getProduct,
   getProductsByName,
+  searchAutoComplete,
 };
