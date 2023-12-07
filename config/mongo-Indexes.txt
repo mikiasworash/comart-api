@@ -1,0 +1,43 @@
+default
+
+{
+  "mappings": {
+    "dynamic": true
+  }
+}
+
+
+autoCompleteProducts
+
+{
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "name": [
+        {
+          "foldDiacritics": false,
+          "maxGrams": 7,
+          "minGrams": 3,
+          "tokenization": "edgeGram",
+          "type": "autocomplete"
+        }
+      ]
+    }
+  }
+}
+
+
+vectorSearch
+
+{
+  "mappings": {
+    "dynamic": true,
+    "fields": {
+      "name": {
+        "dimensions": 1536,
+        "similarity": "cosine",
+        "type": "knnVector"
+      }
+    }
+  }
+}

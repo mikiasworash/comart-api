@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
+import axios from "axios";
 
 // @desc Add a new product
 // router POST /api/products
@@ -44,10 +45,18 @@ const updateProduct = asyncHandler(async (req, res) => {
       throw new Error("This user is not the owner of this product");
     }
 
-    product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    product.name = req.body.name;
+    product.description = req.body.description;
+    product.category = req.body.category;
+    product.price = req.body.price;
+    product.quantity = req.body.quantity;
+
+    if (req.body.photo) {
+      product.photo = req.body.photo;
+    }
+
+    await product.save();
+
     res.status(200).json({ product });
   }
 });
@@ -197,17 +206,49 @@ const getProductsByName = asyncHandler(async (req, res) => {
   //     select: "name",
   //   });
 
+  // const products = await Product.aggregate([
+  //   {
+  //     $search: {
+  //       index: "default",
+  //       text: {
+  //         query: query,
+  //         path: {
+  //           wildcard: "*",
+  //         },
+  //         fuzzy: {},
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "categories",
+  //       foreignField: "_id",
+  //       localField: "category",
+  //       as: "category",
+  //     },
+  //   },
+  //   { $unwind: "$category" },
+  //   {
+  //     $lookup: {
+  //       from: "users",
+  //       foreignField: "_id",
+  //       localField: "vendor",
+  //       as: "vendor",
+  //     },
+  //   },
+  //   { $unwind: "$vendor" },
+  // ]);
+
+  const embedding = await getEmbedding(query);
+
   const products = await Product.aggregate([
     {
-      $search: {
-        index: "default",
-        text: {
-          query: query,
-          path: {
-            wildcard: "*",
-          },
-          fuzzy: {},
-        },
+      $vectorSearch: {
+        queryVector: embedding,
+        path: "embedding",
+        numCandidates: 100,
+        limit: 5,
+        index: "vectorSearch",
       },
     },
     {
@@ -236,6 +277,28 @@ const getProductsByName = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({ products });
+});
+
+const getEmbedding = asyncHandler(async (query) => {
+  const response = await axios.post(
+    "https://api.openai.com/v1/embeddings",
+    {
+      input: query,
+      model: "text-embedding-ada-002",
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.openai_api_key}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.status === 200) {
+    return response.data.data[0].embedding;
+  } else {
+    throw new Error(`Failed to get embedding. Status code: ${response.status}`);
+  }
 });
 
 // @desc search autocomplete

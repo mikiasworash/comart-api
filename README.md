@@ -1,6 +1,8 @@
 # COMART API
 
-> Backend API for comart, an ecommerce platform
+> This is the backend code for comart, an ecommerce platform
+
+> For the frontend code Click 👉 [Comart Web](https://github.com/mikiasworash/comart-web)
 
 ## How to use Comart API
 
@@ -14,19 +16,11 @@ git clone https://github.com/mikiasworash/comart-api.git
 
 ```
 cd comart-api
+
 npm install
 ```
 
-### 3. Create ".env" file at the root folder and set your environment variables
-```
-NODE_ENV=development
-PORT=5000
-MONGO_URI="Enter you mongodb uri here"
-JWT_SECRET_KEY="Enter a random secret key here"
-JWT_EXPIRE=30d
-chapaSecretKey="Enter your chapa secret key here"
-chapaSecretHash="Enter your chapa secret hash here"
-```
+### 3. Rename the `.env-copy` file to `.env` and update your environment variables
 
 ### 4. Start the API
 

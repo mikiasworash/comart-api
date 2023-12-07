@@ -20,7 +20,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import mongoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
 import xss from "xss-clean";
-import { rateLimit } from 'express-rate-limit'
+import { rateLimit } from "express-rate-limit";
 import hpp from "hpp";
 import cors from "cors";
 
@@ -46,17 +46,19 @@ app.use(helmet());
 // prevent XSS (cross-site scripting) attacks
 app.use(xss());
 
-// set rate limit options 
-const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000,
-	limit: 100, 
-	standardHeaders: 'draft-7', 
-	legacyHeaders: false, 
-})
+// set rate limit options
+// const limiter = rateLimit({
+// 	windowMs: 15 * 60 * 1000,
+// 	limit: 100,
+// 	standardHeaders: 'draft-7',
+// 	legacyHeaders: false,
+// })
 
-// apply the limit to control number of requests a client (ip address) 
+// apply the limit to control number of requests a client (ip address)
 // can make within a specified time frame
-app.use(limiter)
+// app.use(limiter)
+
+// app.set('trust proxy', true);
 
 // prevent http parameter pollution (hpp)
 app.use(hpp());
