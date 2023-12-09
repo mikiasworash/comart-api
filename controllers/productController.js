@@ -107,6 +107,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @access Public
 const getProducts = asyncHandler(async (req, res) => {
   let products = await Product.find()
+    .select("-embedding")
     .populate({
       path: "category",
       select: "name",
@@ -124,6 +125,7 @@ const getProducts = asyncHandler(async (req, res) => {
 // @access Public
 const getProduct = asyncHandler(async (req, res) => {
   let product = await Product.findById(req.params.id)
+    .select("-embedding")
     .populate({
       path: "category",
       select: "name",
@@ -140,10 +142,12 @@ const getProduct = asyncHandler(async (req, res) => {
 // router GET /api/products/vendor/:vendorId
 // @access Public
 const getProductsByVendor = asyncHandler(async (req, res) => {
-  let products = await Product.find({ vendor: req.params.vendorId }).populate({
-    path: "category",
-    select: "name",
-  });
+  let products = await Product.find({ vendor: req.params.vendorId })
+    .select("-embedding")
+    .populate({
+      path: "category",
+      select: "name",
+    });
 
   return res.status(200).json({ products });
 });
@@ -153,6 +157,7 @@ const getProductsByVendor = asyncHandler(async (req, res) => {
 // @access Public
 const getFeaturedProducts = asyncHandler(async (req, res) => {
   let products = await Product.find({ featured: true })
+    .select("-embedding")
     .populate({
       path: "category",
       select: "name",
@@ -176,6 +181,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
   });
 
   const products = await Product.find({ category: category._id })
+    .select("-embedding")
     .populate({
       path: "category",
       select: "name",
@@ -197,6 +203,7 @@ const getProductsByName = asyncHandler(async (req, res) => {
   // const products = await Product.find({
   //   name: { $regex: new RegExp(query, "i") },
   // })
+  //   .select("-embedding")
   //   .populate({
   //     path: "category",
   //     select: "name",
@@ -219,6 +226,11 @@ const getProductsByName = asyncHandler(async (req, res) => {
   //       },
   //     },
   //   },
+  // {
+  //   $project: {
+  //     embedding: 0,
+  //   },
+  // },
   //   {
   //     $lookup: {
   //       from: "categories",
@@ -250,6 +262,11 @@ const getProductsByName = asyncHandler(async (req, res) => {
         queryVector: product_embedding,
         numCandidates: 100,
         limit: 5,
+      },
+    },
+    {
+      $project: {
+        embedding: 0,
       },
     },
     {
@@ -318,6 +335,11 @@ const searchAutoComplete = asyncHandler(async (req, res) => {
           tokenOrder: "sequential",
           fuzzy: {},
         },
+      },
+    },
+    {
+      $project: {
+        embedding: 0,
       },
     },
     {
