@@ -239,16 +239,17 @@ const getProductsByName = asyncHandler(async (req, res) => {
   //   { $unwind: "$vendor" },
   // ]);
 
-  const embedding = await getEmbedding(query);
+  // get embedding from openai for the query
+  const product_embedding = await getEmbedding(query);
 
   const products = await Product.aggregate([
     {
       $vectorSearch: {
-        queryVector: embedding,
+        index: "vector_index",
         path: "embedding",
+        queryVector: product_embedding,
         numCandidates: 100,
         limit: 5,
-        index: "vectorSearch",
       },
     },
     {

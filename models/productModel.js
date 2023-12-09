@@ -50,7 +50,9 @@ productSchema.pre("save", async function (next) {
       }
     );
 
-    this.embedding = response.data.data[0].embedding;
+    if (response.status === 200) {
+      this.embedding = response.data.data[0].embedding;
+    }
   } catch (err) {
     console.error(err);
   }

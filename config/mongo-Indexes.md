@@ -1,3 +1,8 @@
+# Indexes on MongoDB Atlas
+
+## 1. default index for product search
+
+```
 default
 
 {
@@ -6,7 +11,9 @@ default
   }
 }
 
-
+```
+## 2. index for autocompletion of product search
+```
 autoCompleteProducts
 
 {
@@ -25,19 +32,21 @@ autoCompleteProducts
     }
   }
 }
+```
 
-
-vectorSearch
+## 3. index for vector search
+```
+vector_index
 
 {
-  "mappings": {
-    "dynamic": true,
-    "fields": {
-      "name": {
-        "dimensions": 1536,
-        "similarity": "cosine",
-        "type": "knnVector"
-      }
+  "type": "vectorSearch",
+  "fields": [
+    {
+      "numDimensions": 1536,
+      "path": "embedding",
+      "similarity": "euclidean",
+      "type": "vector"
     }
-  }
+  ]
 }
+```

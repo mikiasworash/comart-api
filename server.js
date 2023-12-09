@@ -47,18 +47,17 @@ app.use(helmet());
 app.use(xss());
 
 // set rate limit options
-// const limiter = rateLimit({
-// 	windowMs: 15 * 60 * 1000,
-// 	limit: 100,
-// 	standardHeaders: 'draft-7',
-// 	legacyHeaders: false,
-// })
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: false,
+});
 
 // apply the limit to control number of requests a client (ip address)
 // can make within a specified time frame
-// app.use(limiter)
-
-// app.set('trust proxy', true);
+app.use(limiter);
 
 // prevent http parameter pollution (hpp)
 app.use(hpp());
