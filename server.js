@@ -15,6 +15,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import ratingRoutes from "./routes/ratingRoutes.js";
 
 // security packages
 import mongoSanitize from "express-mongo-sanitize";
@@ -72,6 +73,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/ratings", ratingRoutes);
 
 // add middleware functions
 app.use(notFound);

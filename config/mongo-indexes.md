@@ -1,10 +1,8 @@
-# Indexes on MongoDB Atlas
+# Create the following indexes on MongoDB Atlas for product searching purposes
 
-## 1. default index for product search
+## 1. Create an index called `default` for the default product search
 
 ```
-default
-
 {
   "mappings": {
     "dynamic": true
@@ -12,10 +10,8 @@ default
 }
 
 ```
-## 2. index for autocompletion of product search
+## 2. Create an index called `autoCompleteProducts`  for autocompleting words in search
 ```
-autoCompleteProducts
-
 {
   "mappings": {
     "dynamic": false,
@@ -34,10 +30,8 @@ autoCompleteProducts
 }
 ```
 
-## 3. index for vector search
+## 3. Create an index called `vector_index` for vector/semantic search
 ```
-vector_index
-
 {
   "type": "vectorSearch",
   "fields": [

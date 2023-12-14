@@ -2,7 +2,9 @@
 
 > This is the backend code for comart, an ecommerce platform
 
-> For the frontend code Click 👉 [Comart Web](https://github.com/mikiasworash/comart-web)
+> For the frontend code, Click 👉 [Comart Web](https://github.com/mikiasworash/comart-web)
+
+> To view the app live, Click 👉 [View Live](https://comart-web.vercel.app/)
 
 ## How to use Comart API
 
