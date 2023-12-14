@@ -1,6 +1,5 @@
 import asyncHandler from "express-async-handler";
 import Cart from "../models/cartModel.js";
-import User from "../models/userModel.js";
 
 // @desc Add cart
 // router POST /api/cart/:id
