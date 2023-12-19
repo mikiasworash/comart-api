@@ -8,6 +8,10 @@ import crypto from "crypto";
 // router GET /api/orders
 // @access Private
 const getOrders = asyncHandler(async (req, res) => {
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
+  const offset = (page - 1) * limit;
+
   const orders = await Order.find()
     .populate({
       path: "buyer",
@@ -20,7 +24,9 @@ const getOrders = asyncHandler(async (req, res) => {
         path: "vendor",
         select: "name photo",
       },
-    });
+    })
+    .skip(offset)
+    .limit(limit);
 
   res.status(200).json({ orders });
 });
@@ -29,6 +35,10 @@ const getOrders = asyncHandler(async (req, res) => {
 // router GET /api/orders/:vendorId
 // @access Private
 const getOrdersByVendor = asyncHandler(async (req, res) => {
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
+  const offset = (page - 1) * limit;
+
   const vendorId = req.params.vendorId;
 
   let orders = await Order.find()
@@ -43,7 +53,9 @@ const getOrdersByVendor = asyncHandler(async (req, res) => {
         path: "vendor",
         select: "name photo",
       },
-    });
+    })
+    .skip(offset)
+    .limit(limit);
 
   orders = orders.filter((order) => {
     return order.products.some((product) => {

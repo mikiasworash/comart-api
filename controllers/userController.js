@@ -144,7 +144,14 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // router GET /api/users/vendors
 // @access Public
 const getVendors = asyncHandler(async (req, res) => {
-  let vendors = await User.find({ role: "vendor" }).select("-password");
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
+  const offset = (page - 1) * limit;
+
+  let vendors = await User.find({ role: "vendor" })
+    .select("-password")
+    .skip(offset)
+    .limit(limit);
 
   return res.status(200).json({ vendors });
 });

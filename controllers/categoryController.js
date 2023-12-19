@@ -70,6 +70,19 @@ const getCategories = asyncHandler(async (req, res) => {
   return res.status(200).json({ categories });
 });
 
+// @desc Get all categores paginated
+// router GET /api/categories/paginated
+// @access Public
+const getCategoriesPaginated = asyncHandler(async (req, res) => {
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
+  const offset = (page - 1) * limit;
+
+  let categories = await Category.find().skip(offset).limit(limit);
+
+  return res.status(200).json({ categories });
+});
+
 // @desc Get category
 // router GET /api/categories/:id
 // @access Public
@@ -89,4 +102,5 @@ export {
   getCategories,
   getCategory,
   deleteCategory,
+  getCategoriesPaginated,
 };

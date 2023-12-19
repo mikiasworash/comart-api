@@ -106,6 +106,10 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // router GET /api/products
 // @access Public
 const getProducts = asyncHandler(async (req, res) => {
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 8;
+  const offset = (page - 1) * limit;
+
   let products = await Product.find()
     .select("-embedding")
     .populate({
@@ -115,7 +119,9 @@ const getProducts = asyncHandler(async (req, res) => {
     .populate({
       path: "vendor",
       select: "name",
-    });
+    })
+    .skip(offset)
+    .limit(limit);
 
   return res.status(200).json({ products });
 });
@@ -142,12 +148,18 @@ const getProduct = asyncHandler(async (req, res) => {
 // router GET /api/products/vendor/:vendorId
 // @access Public
 const getProductsByVendor = asyncHandler(async (req, res) => {
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
+  const offset = (page - 1) * limit;
+
   let products = await Product.find({ vendor: req.params.vendorId })
     .select("-embedding")
     .populate({
       path: "category",
       select: "name",
-    });
+    })
+    .skip(offset)
+    .limit(limit);
 
   return res.status(200).json({ products });
 });
@@ -156,6 +168,10 @@ const getProductsByVendor = asyncHandler(async (req, res) => {
 // router GET /api/products/featured
 // @access Public
 const getFeaturedProducts = asyncHandler(async (req, res) => {
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 8;
+  const offset = (page - 1) * limit;
+
   let products = await Product.find({ featured: true })
     .select("-embedding")
     .populate({
@@ -165,7 +181,9 @@ const getFeaturedProducts = asyncHandler(async (req, res) => {
     .populate({
       path: "vendor",
       select: "name",
-    });
+    })
+    .skip(offset)
+    .limit(limit);
 
   return res.status(200).json({ products });
 });
@@ -180,6 +198,10 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     name: { $regex: new RegExp(categoryName, "i") },
   });
 
+  const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 8;
+  const offset = (page - 1) * limit;
+
   const products = await Product.find({ category: category._id })
     .select("-embedding")
     .populate({
@@ -189,7 +211,9 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     .populate({
       path: "vendor",
       select: "name",
-    });
+    })
+    .skip(offset)
+    .limit(limit);
 
   return res.status(200).json({ products });
 });
@@ -261,7 +285,7 @@ const getProductsByName = asyncHandler(async (req, res) => {
         path: "embedding",
         queryVector: product_embedding,
         numCandidates: 100,
-        limit: 5,
+        limit: 8,
       },
     },
     {

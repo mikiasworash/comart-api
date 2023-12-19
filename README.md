@@ -24,7 +24,9 @@ npm install
 
 ### 3. Rename the `.env-copy` file to `.env` and update your environment variables
 
-### 4. Start the API
+### 4. Create indexes on mongodb atlas as stated in the file `config/mongo-indexes.md`
+
+### 5. Start the API
 
 ```
 npm run dev
