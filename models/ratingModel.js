@@ -13,7 +13,8 @@ const ratingSchema = mongoose.Schema(
     rate: {
       type: Number,
       required: true,
-      min: [1, "Rate can not be less then 1"],
+      min: [1, "Rate cannot be less than 1"],
+      max: [5, "Rate cannot be greater than 5"],
     },
   },
   {
