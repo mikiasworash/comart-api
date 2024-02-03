@@ -16,6 +16,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import ratingRoutes from "./routes/ratingRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 
 // security packages
 import mongoSanitize from "express-mongo-sanitize";
@@ -50,7 +51,7 @@ app.use(xss());
 // set rate limit options
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  limit: 200,
   standardHeaders: true,
   legacyHeaders: false,
   validate: false,
@@ -74,6 +75,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/ratings", ratingRoutes);
+app.use("/api/messages", messageRoutes);
 
 // add middleware functions
 app.use(notFound);

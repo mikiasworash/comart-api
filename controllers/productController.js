@@ -146,7 +146,7 @@ const getProduct = asyncHandler(async (req, res) => {
 
 // @desc Get products owned by a vendor
 // router GET /api/products/vendor/:vendorId
-// @access Public
+// @access Private
 const getProductsByVendor = asyncHandler(async (req, res) => {
   const page = req.query.page ? parseInt(req.query.page, 10) : 1;
   const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
@@ -224,19 +224,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 const getProductsByName = asyncHandler(async (req, res) => {
   const query = req.params.query.toLowerCase();
 
-  // const products = await Product.find({
-  //   name: { $regex: new RegExp(query, "i") },
-  // })
-  //   .select("-embedding")
-  //   .populate({
-  //     path: "category",
-  //     select: "name",
-  //   })
-  //   .populate({
-  //     path: "vendor",
-  //     select: "name",
-  //   });
-
+  // fuzzy search by name
   // const products = await Product.aggregate([
   //   {
   //     $search: {
@@ -276,8 +264,10 @@ const getProductsByName = asyncHandler(async (req, res) => {
   // ]);
 
   // get embedding from openai for the query
+  // to match with stored embedding
   const product_embedding = await getEmbedding(query);
 
+  // vector search by using openai embedding
   const products = await Product.aggregate([
     {
       $vectorSearch: {
@@ -321,6 +311,9 @@ const getProductsByName = asyncHandler(async (req, res) => {
   return res.status(200).json({ products });
 });
 
+// @desc get embedding from openai
+// route nonexistent
+// @access public
 const getEmbedding = asyncHandler(async (query) => {
   const response = await axios.post(
     "https://api.openai.com/v1/embeddings",

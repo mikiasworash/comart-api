@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
+import sendEmail from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 // @desc Auth User / Set token
 // router POST /api/users/auth
@@ -35,6 +37,96 @@ const authUser = asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error("Invalid email or password");
   }
+});
+
+// @desc    Forgot Password
+// @route   POST /api/users/auth/forgotpassword
+// @access  Public
+const forgotPassword = asyncHandler(async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("No user found with that email");
+  }
+
+  const resetToken = user.getResetPasswordToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/users/auth/resetpassword/${resetToken}`;
+
+  const message = `Dear ${user.name},
+
+  You are receiving this email because you have requested the reset of a password. Please click on the following link to reset your password:
+  
+  ${resetUrl}
+  
+  If you did not request a password reset or believe this email was sent to you in error, please ignore it. Your account security is important to us.
+  
+  Best Regards,
+  Comart Team`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Password Reset Request",
+      message,
+    });
+
+    res.status(200).json({
+      sucess: true,
+      data: "Email Sent",
+    });
+  } catch (error) {
+    console.log(error);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save({ validateBeforeSave: false });
+
+    res.status(500);
+    throw new Error("Email could not be sent");
+  }
+});
+
+// @desc    Reset Password
+// @route   PUT /api/users/auth/resetpassword/:resettoken
+// @access  Public
+const resetPassword = asyncHandler(async (req, res) => {
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.resettoken)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("Invalid Token");
+  }
+
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+
+  await user.save();
+
+  generateToken(res, user._id);
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    photo: user.photo,
+    role: user.role,
+    active: user.active,
+  });
 });
 
 // @desc Register a new user
@@ -176,6 +268,8 @@ const updateVendorStatus = asyncHandler(async (req, res) => {
 
 export {
   authUser,
+  forgotPassword,
+  resetPassword,
   registerUser,
   logoutUser,
   getUserProfile,
