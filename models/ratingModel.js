@@ -10,11 +10,11 @@ const ratingSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
     },
-    rate: {
+    rating: {
       type: Number,
       required: true,
-      min: [1, "Rate cannot be less than 1"],
-      max: [5, "Rate cannot be greater than 5"],
+      min: [1, "Rating must be at least 1"],
+      max: [5, "Rating must can not be more than 5"],
     },
     review: {
       type: String,

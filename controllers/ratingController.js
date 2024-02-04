@@ -20,17 +20,17 @@ const getRatings = asyncHandler(async (req, res) => {
 // router GET /api/ratings/:id
 // @access Public
 const getRating = asyncHandler(async (req, res) => {
-  let ratings = await Rating.find({ product: req.params.id }).populate({
+  let rating = await Rating.find({ product: req.params.id }).populate({
     path: "product",
     select: "name description",
   });
 
-  if (!ratings) {
+  if (!rating) {
     res.status(400);
-    throw new Error("No ratings found for this product");
+    throw new Error("No rating found for this product");
   }
 
-  return res.status(200).json(ratings);
+  return res.status(200).json(rating);
 });
 
 // @desc Add rating
@@ -68,6 +68,12 @@ const updateRating = asyncHandler(async (req, res) => {
     throw new Error("No rating found with this id");
   }
 
+  // Make sure user is the rating owner
+  if (rating.user.toString() !== req.user._id) {
+    res.status(401);
+    throw new Error("This user is not authorized to update this rating");
+  }
+
   rating = await rating.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -88,6 +94,12 @@ const deleteRating = asyncHandler(async (req, res) => {
   if (!rating) {
     res.status(404);
     throw new Error("No rating found with this id");
+  }
+
+  // Make sure user is the rating owner
+  if (rating.user.toString() !== req.user._id) {
+    res.status(401);
+    throw new Error("This user is not authorized to delete this rating");
   }
 
   await rating.remove();
