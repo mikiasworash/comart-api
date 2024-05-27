@@ -122,7 +122,7 @@ const addOrder = asyncHandler(async (req, res) => {
 // @access Private
 const updateOrder = asyncHandler(async (req, res) => {
   const hash = crypto
-    .createHmac("sha256", process.env.chapaSecretHash)
+    .createHmac("sha256", process.env.CHAPA_SECRET_HASH)
     .update(JSON.stringify(req.body))
     .digest("hex");
 

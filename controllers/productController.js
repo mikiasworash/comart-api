@@ -323,7 +323,7 @@ const getEmbedding = asyncHandler(async (query) => {
     },
     {
       headers: {
-        Authorization: `Bearer ${process.env.openai_api_key}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
     }

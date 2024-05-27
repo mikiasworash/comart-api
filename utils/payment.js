@@ -3,7 +3,7 @@ import axios from "axios";
 import { Chapa } from "chapa-nodejs";
 
 const chapa = new Chapa({
-  secretKey: process.env.chapaSecretKey,
+  secretKey: process.env.CHAPA_SECRET_KEY,
 });
 
 const payment = asyncHanlder(async (req, res) => {
@@ -18,7 +18,7 @@ const payment = asyncHanlder(async (req, res) => {
       req.body,
       {
         headers: {
-          Authorization: `Bearer ${process.env.chapaSecretKey}`,
+          Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}`,
         },
       }
     );
@@ -38,7 +38,7 @@ const verifyPayment = asyncHanlder(async (req, res) => {
       `https://api.chapa.co/v1/transaction/verify/${tx_ref}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.chapaSecretKey}`,
+          Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}`,
         },
       }
     );

@@ -69,7 +69,7 @@ const updateRating = asyncHandler(async (req, res) => {
   }
 
   // Make sure user is the rating owner
-  if (rating.user.toString() !== req.user._id) {
+  if (rating.user.toString() !== req.user._id.toString()) {
     res.status(401);
     throw new Error("This user is not authorized to update this rating");
   }
@@ -97,7 +97,7 @@ const deleteRating = asyncHandler(async (req, res) => {
   }
 
   // Make sure user is the rating owner
-  if (rating.user.toString() !== req.user._id) {
+  if (rating.user.toString() !== req.user._id.toString()) {
     res.status(401);
     throw new Error("This user is not authorized to delete this rating");
   }
