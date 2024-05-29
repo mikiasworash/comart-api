@@ -28,7 +28,9 @@ const getOrders = asyncHandler(async (req, res) => {
     .skip(offset)
     .limit(limit);
 
-  res.status(200).json({ orders });
+  const totalOrders = await Order.countDocuments();
+
+  res.status(200).json({ orders, totalOrders });
 });
 
 // @desc Get Orders by Vendor
@@ -63,7 +65,9 @@ const getOrdersByVendor = asyncHandler(async (req, res) => {
     });
   });
 
-  res.status(200).json({ orders });
+  const totalOrders = await Order.countDocuments();
+
+  res.status(200).json({ orders, totalOrders });
 });
 
 // @desc Add Order

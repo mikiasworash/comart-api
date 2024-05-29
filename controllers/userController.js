@@ -245,7 +245,9 @@ const getVendors = asyncHandler(async (req, res) => {
     .skip(offset)
     .limit(limit);
 
-  return res.status(200).json({ vendors });
+  const totalVendors = await User.countDocuments({ role: "vendor" });
+
+  return res.status(200).json({ vendors, totalVendors });
 });
 
 // @desc Update Vendor status

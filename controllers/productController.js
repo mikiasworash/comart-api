@@ -123,7 +123,9 @@ const getProducts = asyncHandler(async (req, res) => {
     .skip(offset)
     .limit(limit);
 
-  return res.status(200).json({ products });
+  const totalProducts = await Product.countDocuments();
+
+  return res.status(200).json({ products, totalProducts });
 });
 
 // @desc Get a single product
@@ -161,7 +163,11 @@ const getProductsByVendor = asyncHandler(async (req, res) => {
     .skip(offset)
     .limit(limit);
 
-  return res.status(200).json({ products });
+  const totalProducts = await Product.countDocuments({
+    vendor: req.params.vendorId,
+  });
+
+  return res.status(200).json({ products, totalProducts });
 });
 
 // @desc Get Featured products
@@ -185,7 +191,11 @@ const getFeaturedProducts = asyncHandler(async (req, res) => {
     .skip(offset)
     .limit(limit);
 
-  return res.status(200).json({ products });
+  const totalProducts = await Product.countDocuments({
+    featured: true,
+  });
+
+  return res.status(200).json({ products, totalProducts });
 });
 
 // @desc Get products by category
@@ -215,7 +225,11 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     .skip(offset)
     .limit(limit);
 
-  return res.status(200).json({ products });
+  const totalProducts = await Product.countDocuments({
+    category: category._id,
+  });
+
+  return res.status(200).json({ products, totalProducts });
 });
 
 // @desc Get products by name (query string)

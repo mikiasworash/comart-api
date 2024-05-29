@@ -80,7 +80,9 @@ const getCategoriesPaginated = asyncHandler(async (req, res) => {
 
   let categories = await Category.find().skip(offset).limit(limit);
 
-  return res.status(200).json({ categories });
+  const totalCategories = await Category.countDocuments();
+
+  return res.status(200).json({ categories, totalCategories });
 });
 
 // @desc Get category
